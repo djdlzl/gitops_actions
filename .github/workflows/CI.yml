@@ -1,7 +1,10 @@
-name: Build and Push Docker Image
+name: Java CI with Maven
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -18,17 +21,20 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        
+
     - name: Grant execute permission for Maven Wrapper
       run: chmod +x ./mvnw
-      
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/petclinic:latest .
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/petclinic:latest
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Build with Maven Wrapper
+      run: ./mvnw clean install
+
+    - name: Run tests
+      run: ./mvnw test
