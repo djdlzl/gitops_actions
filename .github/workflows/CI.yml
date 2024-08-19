@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Build and Push Docker Image
 
 on:
   push:
@@ -36,5 +36,13 @@ jobs:
     - name: Build with Maven Wrapper
       run: ./mvnw clean install
 
-    - name: Run tests
-      run: ./mvnw test
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/petclinic:latest .
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/petclinic:latest
