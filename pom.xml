@@ -16,6 +16,10 @@
 
   <properties>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8982e04ff103188a78f6eb9570a76cf5bbe77478
     <!-- Generic properties -->
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
