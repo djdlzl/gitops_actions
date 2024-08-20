@@ -1,4 +1,5 @@
-name: Build and Push Docker Image to ECR
+name: Build, Push, and Update Deployment
+
 on:
   push:
     branches:
@@ -6,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,3 +54,14 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Update Deployment YAML
+      run: |
+        sed -i 's|image: .*|image: 213899591783.dkr.ecr.ap-northeast-3.amazonaws.com/gitops-repo:${{ github.sha }}|' k8s/deployment.yaml
+
+    - name: Commit and push if there are changes
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'github-actions@github.com'
+        git add k8s/deployment.yaml
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update image tag to ${{ github.sha }}"; git push)
