@@ -49,7 +49,7 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: 213899591783.dkr.ecr.ap-northeast-3.amazonaws.com
-        ECR_REPOSITORY: gitops-repo2
+        ECR_REPOSITORY: gitops2-repo
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -57,7 +57,7 @@ jobs:
 
     - name: Update Deployment YAML
       run: |
-        sed -i 's|image: .*|image: 213899591783.dkr.ecr.ap-northeast-3.amazonaws.com/gitops-repo2:${{ github.sha }}|' k8s/deployment.yaml
+        sed -i 's|image: .*|image: 213899591783.dkr.ecr.ap-northeast-3.amazonaws.com/gitops2-repo:${{ github.sha }}|' k8s/deployment.yaml
 
     - name: Commit and push if there are changes
       run: |
